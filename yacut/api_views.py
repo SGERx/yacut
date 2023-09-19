@@ -16,8 +16,7 @@ def get_unique_short_link():
             return short_id
 
 
-@app.route('/api/id/<string:short_id>/', methods=['GET']
-           )
+@app.route('/api/id/<string:short_id>/')
 def get_url(short_id):
     url = URLMap.query.filter_by(short=short_id).first()
     if not url:
@@ -32,18 +31,45 @@ def create_id():
     data = request.get_json()
     if not data:
         raise InvalidAPIUsageError('Отсутствует тело запроса')
-    elif 'url' not in data:
+    if 'url' not in data:
         raise InvalidAPIUsageError('"url" является обязательным полем!')
-    if URLMap.query.filter_by(short=data['custom_id']).first():
-        raise InvalidAPIUsageError(f'Имя "{data["custom_id"]}" уже занято.')
-    elif not match(
+
+    if not match(
             r'^[a-z]+://[^\/\?:]+(:[0-9]+)?(\/.*?)?(\?.*)?$', data['url']):
         raise InvalidAPIUsageError('Указан недопустимый URL')
-    elif not match(r'^[A-Za-z0-9]{1,16}$', data['custom_id']):
+    if not data.get('custom_id'):
+        data['custom_id'] = get_unique_short_link()
+    if not match(r'^[A-Za-z0-9]{1,16}$', data['custom_id']):
         raise InvalidAPIUsageError(
             'Указано недопустимое имя для короткой ссылки')
+    if URLMap.query.filter_by(short=data['custom_id']).first():
+        raise InvalidAPIUsageError(f'Имя "{data["custom_id"]}" уже занято.')
     url_commit = URLMap()
     url_commit.from_dict(data)
     db.session.add(url_commit)
     db.session.commit()
     return jsonify(url_commit.to_dict()), HTTPStatus.CREATED
+
+
+# @app.route('/api/id/', methods=['POST'])
+# def create_id():
+#     data = request.get_json()
+#     if not data.get('custom_id'):
+#         data['custom_id'] = get_unique_short_link()
+#     if not data:
+#         raise InvalidAPIUsageError('Отсутствует тело запроса')
+#     if 'url' not in data:
+#         raise InvalidAPIUsageError('"url" является обязательным полем!')
+#     if URLMap.query.filter_by(short=data['custom_id']).first():
+#         raise InvalidAPIUsageError(f'Имя "{data["custom_id"]}" уже занято.')
+#     if not match(
+#             r'^[a-z]+://[^\/\?:]+(:[0-9]+)?(\/.*?)?(\?.*)?$', data['url']):
+#         raise InvalidAPIUsageError('Указан недопустимый URL')
+#     if not match(r'^[A-Za-z0-9]{1,16}$', data['custom_id']):
+#         raise InvalidAPIUsageError(
+#             'Указано недопустимое имя для короткой ссылки')
+#     url_commit = URLMap()
+#     url_commit.from_dict(data)
+#     db.session.add(url_commit)
+#     db.session.commit()
+#     return jsonify(url_commit.to_dict()), HTTPStatus.CREATED
