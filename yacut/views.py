@@ -17,12 +17,12 @@ def index_view():
         )
         db.session.add(url_commit)
         db.session.commit()
-        flash(url_for('index_view', short=shortlink, _external=True))
+        flash(url_for('opinion_view', short=shortlink, _external=True))
     return render_template('main.html', form=form)
 
 
 @app.route('/<string:short>')
-def short_view(short):
+def opinion_view(short):
     return redirect(
         URLMap.query.filter_by(short=short).first_or_404().original
     )
