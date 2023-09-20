@@ -13,14 +13,14 @@ sys.path.append(str(BASE_DIR))
 
 try:
     from yacut import app, db
-    from yacut.models import URLMap
+    from yacut.models import URL_map
 except NameError:
     raise AssertionError(
         'Не обнаружен объект приложения. Создайте экземпляр класса Flask и назовите его app.',
     )
 except ImportError as exc:
-    if any(obj in exc.name for obj in ['models', 'URLMap']):
-        raise AssertionError('В файле models не найдена модель URLMap')
+    if any(obj in exc.name for obj in ['models', 'URL_map']):
+        raise AssertionError('В файле models не найдена модель URL_map')
     raise AssertionError('Не обнаружен объект класса SQLAlchemy. Создайте его и назовите db.')
 
 
@@ -65,4 +65,4 @@ def mixer():
 
 @pytest.fixture
 def short_python_url(mixer):
-    return mixer.blend(URLMap, original='https://www.python.org', short='py')
+    return mixer.blend(URL_map, original='https://www.python.org', short='py')

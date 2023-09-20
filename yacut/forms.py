@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import URLField, StringField, SubmitField
 from wtforms.validators import DataRequired, Length, URL, Optional, Regexp, ValidationError
-from .models import URLMap
+from .models import URL_map
 
 
 class ShortURLForm(FlaskForm):
@@ -27,5 +27,5 @@ class ShortURLForm(FlaskForm):
     submit = SubmitField('Создать')
 
     def validate_custom_id(self, field):
-        if field.data and URLMap.query.filter_by(short=field.data).first():
+        if field.data and URL_map.query.filter_by(short=field.data).first():
             raise ValidationError(f'Имя {field.data} уже занято!')
