@@ -13,7 +13,7 @@ sys.path.append(str(BASE_DIR))
 
 try:
     from yacut import app, db
-    from yacut.models import URL_map
+    from yacut.models import URLMap
 except NameError:
     raise AssertionError(
         'Не обнаружен объект приложения. Создайте экземпляр класса Flask и назовите его app.',
@@ -65,4 +65,4 @@ def mixer():
 
 @pytest.fixture
 def short_python_url(mixer):
-    return mixer.blend(URL_map, original='https://www.python.org', short='py')
+    return mixer.blend(URLMap, original='https://www.python.org', short='py')
