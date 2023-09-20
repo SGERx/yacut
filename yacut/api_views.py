@@ -1,10 +1,12 @@
-from flask import jsonify, request
 from http import HTTPStatus
+from random import choices
 from re import match
+from string import ascii_letters, digits
+
+from flask import jsonify, request
 
 from yacut import app, db
-from random import choices
-from string import ascii_letters, digits
+
 from .error_handlers import InvalidAPIUsageError
 from .models import URLMap
 
@@ -37,7 +39,8 @@ def create_id():
     url_commit.from_dict(data)
     db.session.add(url_commit)
     db.session.commit()
-    return jsonify(short_link='http://localhost/' + url_commit.short, url=url_commit.original), HTTPStatus.CREATED
+    base = request.host_url
+    return jsonify(short_link=base + url_commit.short, url=url_commit.original), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short_id>/')
